@@ -1,0 +1,33 @@
+<!doctype html>
+<htm>
+    <head>
+        <title>Quest</title>
+        
+        <!-- jquery -->
+        <script type="text/javascript" src="/js/jquery.js"></script>
+ 
+        <!-- bootstrap -->
+        <link type="text/css" rel="stylesheet" href="/css/bootstrap.css" />
+        <script type="text/javascript" src="/js/bootstrap.js"></script>
+ 
+        <!-- handlebars -->
+        <script type="text/javascript" src="/js/handlebars-v4.0.5.js"></script>
+ 
+        <!-- alpaca -->
+        <link type="text/css" href="/css/alpaca.css" rel="stylesheet" />
+        <script type="text/javascript" src="/js/alpaca.js"></script>
+        
+    </head>
+    
+    <body>
+        <!--<header><img src="/img/IMG_2312.jpg" alt="Baaga beach!"></header>-->
+        <header><h1>{{{quest_title}}} <small>{{{quest_description}}}</small></h1></header>
+        <div class="container">
+           
+            <div class="row">
+                {{{body}}}
+            </div>
+        </div>
+        <footer><p>All rights reserved</p></footer>
+    </body>
+</htm>

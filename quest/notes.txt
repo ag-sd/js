@@ -1,0 +1,55 @@
+ //  Can be html or text, JSON COMMENTS?
+  //  All files must be relative to __dirname
+  302 redirect vs 303 redirect
+  
+  
+"form": {
+        "attributes": {
+            "method": "post",
+            "action": "/process"
+        },
+        "buttons": {
+            "submit": {
+                "title": "Next...",
+                "click": function(e) {
+                    this.refreshValidationState(true);
+                    if (!this.isValid(true)) {
+                        this.focus();
+                        return;
+                    }
+
+                    var promise = this.ajaxSubmit();
+                    promise.done(function() {
+                        alert("Success");
+                    });
+                    promise.fail(function() {
+                        alert("Error");
+                    });
+                    promise.always(function() {
+                        //alert("Completed");
+                    });
+                }
+            }
+        }
+    },
+	
+    "postRender": function(renderedField) {
+        var form = renderedField.form;
+        if (form) {
+            form.registerSubmitHandler(function(e, form) {
+                // validate the entire form (top control + all children)
+                form.validate(true);
+                // draw the validation state (top control + all children)
+                form.refreshValidationState(true);
+                // now display something
+                if (form.isFormValid()) {
+                    var value = form.getValue();
+                    alert("The form looks good!  Name: " + value.name + ", Birthday: " + value.birthday + ", Preference: " + value.preference);
+                } else {
+                    alert("There are problems with the form.  Please make the any necessary corrections.");
+                }
+                e.stopPropagation();
+                return false;
+            });
+        }
+    }

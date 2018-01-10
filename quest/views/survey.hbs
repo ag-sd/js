@@ -1,0 +1,117 @@
+<h2 id="chapter_title">{{{chapter_title}}}</h2>
+ 
+<div id="form_container">
+    <div class="progress">
+        <div class="progress-bar" role="progressbar" id="progress_bar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="width:0%">
+        </div>
+    </div>
+    <div id="chapter_description">{{{chapter_description}}}</div>
+    <div id="form_container">
+        <form role="form" id="form_form" action="/processpage" method="post">
+            <div id="form_content"></div>
+        </form>
+    </div>  
+</div>
+
+
+
+<script type="text/javascript">
+
+    var button = {};
+    button.title = "Submit this form!";
+    button.click = function() {
+        // Validate the form
+        this.refreshValidationState(true);
+        if (!this.isValid(true)) {
+            this.focus();
+            return;
+        }
+        // Submit it
+        ajaxSubmitForm();
+    };
+    
+    var formActionConfig = {};
+    formActionConfig.buttons = {};
+    formActionConfig.buttons.button = button;
+     
+    $(document).ready(function() {
+        preprocess(context.form);
+        $("#form_content").alpaca(context.form);
+        setProgress(context);
+    });
+     
+    function checkResponse(data) {
+        try {
+            return JSON.parse(data);
+        } catch (ex) {}
+        return undefined;
+    }
+    
+    function preprocess(formSchema) {
+        
+        if (!formSchema.options) {
+            formSchema.options = {};
+        }
+        formSchema.options.form = formActionConfig;
+        
+        return formSchema;
+    }
+    
+    function ajaxSubmitForm() {
+        // Compile the data to send back
+        var data = {};
+        data.current = context.current;
+        data.form = $( "form" ).serialize();
+        
+        $.ajax({
+            type: "POST",
+            url: "/processpage",
+            data: data,
+            success: function(data) {
+                var response = checkResponse(data)
+                if( response == undefined ) {
+                    return;
+                }
+                console.log(response);
+                if( response.success ) {
+                    if ( response.redirect ) {
+                        
+                        // Redirect
+                        window.location = response.url;
+                    } else {
+                        // Success
+                        console.log("Return success....");
+                        context = response;
+                        
+                        // Progress
+                        setProgress(context);
+                        
+                        // Chapter
+                        $("#chapter_title").text(context.current.title);
+                        $("#chapter_description").html(context.current.description);
+                        
+                        // Form
+                        preprocess(context.form);
+                        $("#form_content").empty();
+                        $("#form_content").alpaca(context.form);
+                    }
+                } else {
+                    console.log("Unable to parse response...");
+                    console.log(data);
+                }
+            },
+            error: function() {
+                // There was an error
+                console.log("Return faulure....");
+            }
+        });
+    }
+    
+    function setProgress(context) {
+        // Progress
+        var percentComplete = ((context.current.progress / context.current.duration) * 100) + "%";
+        $("#progress_bar").css("width", percentComplete);
+        $("#progress-bar").attr("aria-valuenow", percentComplete);
+    }
+    var context = {{{page_context}}};
+</script>
